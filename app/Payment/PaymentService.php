@@ -16,7 +16,7 @@ class PaymentService
      * @return PaymentDriver
      * @throws \Exception
      */
-    public function driver($name, Array $params)
+    public function driver($name, Array $params = [])
     {
         if (!isset($this->drivers[$name])) {
             throw new \Exception("Driver '{$name}' does not exist");

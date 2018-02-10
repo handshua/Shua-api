@@ -18,7 +18,7 @@ class CreateProductsTable extends Migration
             $table->string('name');
             $table->text('introduction');
             $table->unsignedInteger('price');
-            $table->unsignedInteger('stock');
+            $table->integer('stock');
             $table->string('warranty_period');
             $table->boolean('show');
             $table->json('required_params');

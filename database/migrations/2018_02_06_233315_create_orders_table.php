@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Order;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -15,6 +16,7 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->string('id', 128)->primary();
+            $table->tinyInteger('status')->default(Order::ORDER_STATUS_UNPAID);
             $table->unsignedInteger('product_id');
             $table->unsignedInteger('number');
             $table->unsignedInteger('price');

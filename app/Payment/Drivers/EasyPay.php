@@ -66,7 +66,9 @@ class EasyPay implements PaymentDriver
     public function validate(Request $request)
     {
         $data = $request->all();
-        if (empty($data['sign']) || empty($data['out_trade_no']) || empty($data['sign_type']) || strtoupper($data['sign_type']) !== 'MD5')
+        if (empty($data['sign']) || empty($data['trade_status']) || empty($data['out_trade_no']) || empty($data['sign_type']) || strtoupper($data['sign_type']) !== 'MD5')
+            return false;
+        if (strpos(strtolower($data['trade_status']), 'SUCCESS') === false)
             return false;
 
         $sign = $this->sign($data);

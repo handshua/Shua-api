@@ -3,6 +3,8 @@
 namespace App\Models;
 
 
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
@@ -27,13 +29,17 @@ class Product extends Model
         $this->attributes['price'] = $price;
     }
 
-    public function setRequiredParamsAttribute(Array $value)
+    public function setRequiredParamsAttribute($value)
     {
-        $this->required_params = json_encode($value);
+        if ($value instanceof Jsonable) $value = $value->toJson();
+
+        if (is_array($value)) $value = json_encode($value);
+
+        $this->attributes['required_params'] = $value;
     }
 
     public function getRequiredParamsAttribute()
     {
-        return json_decode($this->required_params);
+        return json_decode($this->attributes['required_params']);
     }
 }

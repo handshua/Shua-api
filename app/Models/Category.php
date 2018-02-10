@@ -13,4 +13,9 @@ class Category extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    public function getShowParamsAttribute()
+    {
+        return (boolean)$this->show;
+    }
 }
