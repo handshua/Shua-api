@@ -123,7 +123,7 @@ return [
     |
     */
 
-    'debug' => env('API_DEBUG', false),
+    'debug' => env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -155,7 +155,7 @@ return [
     */
 
     'middleware' => [
-
+        palanik\lumen\Middleware\LumenCors::class
     ],
 
     /*
@@ -169,7 +169,9 @@ return [
     */
 
     'auth' => [
-
+        'jwt' => function ($app) {
+            return new Dingo\Api\Auth\Provider\JWT($app['Tymon\JWTAuth\JWTAuth']);
+        }
     ],
 
     /*

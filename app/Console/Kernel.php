@@ -2,11 +2,9 @@
 
 namespace App\Console;
 
-use App\Console\Commands\SYSTEAMGenerateSecretCommand;
 use App\Console\Commands\SYSTEAMInitRBAC;
 use App\Console\Commands\SYSTEAMInstallCommand;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Support\Facades\Artisan;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
@@ -18,7 +16,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         SYSTEAMInstallCommand::class,
-        SYSTEAMInitRBAC::class
+        SYSTEAMInitRBAC::class,
+        \Laravelista\LumenVendorPublish\VendorPublishCommand::class,
     ];
 
     /**

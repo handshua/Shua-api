@@ -21,8 +21,10 @@ class CategoryController extends Controller
 
     }
 
-    public function store(Category $category, Request $request)
+    public function store(Request $request,$category = null)
     {
+        $category = Category::findOrNew($category);
+
         $data = $this->validate($request, [
             'name' => 'required|string',
             'weight' => 'required|integer|min:0|max:100',
@@ -36,12 +38,9 @@ class CategoryController extends Controller
 
     }
 
-    public function delete(Category $category)
+    public function delete($category)
     {
-        if (!$category->exists) {
-            $this->response->errorNotFound('该分类不存在');
-            return;
-        }
+        $category = Category::findOrFail($category);
 
         if ($category->products->count() > 0) {
             $this->response->errorForbidden('请先删除该分类下所有商品');

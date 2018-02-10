@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+    public function all()
+    {
+        return Order::all();
+    }
+
     public function show(Order $order)
     {
         if (!$order->exists) {
@@ -19,9 +24,10 @@ class OrderController extends Controller
 
     public function pay(Order $order, Payment $payment, Request $request)
     {
-        $notify_url = route('payment.notify', ['payment' => $payment]);
+        $notify_url = route('payment.notify', ['driver' => $payment->driver]);
         $return_url = url('/');
-        $redirect_url = $payment->getDriver()->submit($order->id, $order->price / 100, $notify_url, $return_url);
+        $redirect_url = $payment->getDriver()
+                                ->submit($order->id, $order->price / 100, $notify_url, $return_url);
         if ($request->isMethod('get'))
             return redirect($redirect_url);
         else

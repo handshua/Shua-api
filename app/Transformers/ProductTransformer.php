@@ -18,7 +18,7 @@ class ProductTransformer extends TransformerAbstract
         return [
             'id' => $product->id,
             'name' => $product->name,
-            'transform' => $product->introduction,
+            'introduction' => $product->introduction,
             'price' => $product->price / 100,
             'required_params' => $product->required_params,
             'category_id' => $product->category_id

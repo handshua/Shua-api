@@ -13,7 +13,10 @@
         "spatie/laravel-permission": "^2.8",
         "flipbox/lumen-generator": "^5.5",
         "webpatser/laravel-uuid": "2.*",
-        "unisharp/laravel-settings": "^2.0"
+        "unisharp/laravel-settings": "^2.0",
+        "barryvdh/laravel-cors": "^0.11.0",
+        "laravelista/lumen-vendor-publish": "^2.1",
+        "palanik/lumen-cors": "dev-master"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

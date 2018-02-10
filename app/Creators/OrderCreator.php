@@ -6,7 +6,6 @@ namespace App\Creators;
 use App\Models\Order;
 use App\Models\Product;
 use Dingo\Api\Exception\ValidationHttpException;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Webpatser\Uuid\Uuid;
 
@@ -22,6 +21,9 @@ class OrderCreator
         $order->id = $this->generateId();
         $order->number = $number;
         $order->price = $product->price * $number;
+        $order->status = Order::ORDER_STATUS_UNPAID;
+
+        //TODO: 生成订单超时时间
         $order->expire_at = strtotime($product->warranty_period);
 
         if (!$order->save()) {

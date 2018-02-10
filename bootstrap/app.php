@@ -60,11 +60,13 @@ $app->singleton(
 | route or middleware that'll be assigned to some specific routes.
 |
 */
-
 $app->routeMiddleware([
     'auth' => App\Http\Middleware\Authenticate::class,
     'permission' => Spatie\Permission\Middlewares\PermissionMiddleware::class,
     'role' => Spatie\Permission\Middlewares\RoleMiddleware::class,
+    'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
+    'jwt.refresh' => Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
+    'cors' => palanik\lumen\Middleware\LumenCors::class,
 ]);
 
 /*

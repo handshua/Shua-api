@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Transformers\ProductTransformer;
 use Auth;
+use Dingo\Api\Exception\ValidationHttpException;
 use Dingo\Api\Http\Request;
 
 class ProductController extends Controller
@@ -21,19 +22,30 @@ class ProductController extends Controller
             return $this->response->collection($products, new ProductTransformer);
     }
 
-    public function store(Product $product, Request $request)
+    public function store(Request $request, $product = null)
     {
+        // Lumen 貌似无法自动注入模型
+        $product = Product::findOrNew($product);
+
         // 验证规则 也是接收的字段
         $rules = collect([
             'name' => 'required|string',
             'introduction' => 'required|string',
             'price' => 'required|numeric',
+            'stock' => 'required|integer',
             'show' => 'required|boolean',
-            'required_params' => 'required|json',
-            'category_id' => 'required|exists:categories,id'
+            'required_params' => "required|array",
+            'category_id' => 'required|integer|exists:categories,id',
+//            'warranty_period' => 'required|date', 辣鸡验证器，无法校验 + 30 days 格式的日期
+            'warranty_period' => 'required',
         ]);
 
         $data = $this->validate($request, $rules->toArray());
+
+        // 二次手动校验warranty_period
+        if (!strtotime($data['warranty_period']))
+            throw new ValidationHttpException();
+
         $data['price'] = $data['price'] * 100;
 
         // 保存数据
@@ -44,12 +56,9 @@ class ProductController extends Controller
     }
 
 
-    public function delete(Product $product)
+    public function delete($product)
     {
-        if (!$product->exists) {
-            $this->response->errorNotFound('产品不存在');
-            return;
-        }
+        $product = Product::findOrFail($product);
 
         if ($product->orders->count() > 0) {
             $this->response->errorForbidden('请先删除该商品下的所有订单');
