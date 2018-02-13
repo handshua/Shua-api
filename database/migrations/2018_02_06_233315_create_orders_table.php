@@ -15,7 +15,7 @@ class CreateOrdersTable extends Migration
     public function up()
     {
         Schema::create('orders', function (Blueprint $table) {
-            $table->string('id', 128)->primary();
+            $table->uuid('id', 128)->primary();
             $table->tinyInteger('status')->default(Order::ORDER_STATUS_UNPAID);
             $table->unsignedInteger('product_id');
             $table->unsignedInteger('number');

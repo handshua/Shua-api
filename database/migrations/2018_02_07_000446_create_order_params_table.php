@@ -14,11 +14,12 @@ class CreateOrderParamsTable extends Migration
     public function up()
     {
         Schema::create('order_params', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('order_id');
+            $table->uuid('order_id');
             $table->string('key');
             $table->string('value')->nullable();
             $table->timestamps();
+
+            $table->primary(['order_id', 'key']);
         });
     }
 

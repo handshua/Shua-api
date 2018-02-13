@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Dingo\Api\Exception\ValidationHttpException;
 use Dingo\Api\Routing\Helpers;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
@@ -14,5 +15,10 @@ class Controller extends BaseController
     {
         parent::validate($request, $rules, $messages, $customAttributes);
         return $request->only(array_keys($rules));
+    }
+
+    protected function throwValidationException(Request $request, $validator)
+    {
+        throw new ValidationHttpException($validator->errors()->getMessages());
     }
 }

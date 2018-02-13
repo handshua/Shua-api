@@ -22,7 +22,7 @@ class AuthController extends Controller
         if ($token) {
             return ['token' => $token];
         } else {
-            $this->response->errorUnauthorized('账号或密码错误');
+            return $this->response->errorUnauthorized('账号或密码错误');
         }
     }
 

@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Transformers\OrderTransformer;
 use App\Transformers\ProductTransformer;
 use Auth;
 use Dingo\Api\Exception\ValidationHttpException;
 use Dingo\Api\Http\Request;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -61,39 +63,35 @@ class ProductController extends Controller
         $product = Product::findOrFail($product);
 
         if ($product->orders->count() > 0) {
-            $this->response->errorForbidden('请先删除该商品下的所有订单');
+            return $this->response->errorForbidden('请先删除该商品下的所有订单');
             return;
         }
 
         if ($product->delete()) {
             return ['message' => '已删除'];
         } else {
-            $this->response->errorInternal('删除失败');
+            return $this->response->errorInternal('删除失败');
         }
     }
 
-    public function buy(Product $product, Request $request)
+    public function buy(Request $request, $product)
     {
-        if (!$product->exists) {
-            $this->response->errorNotFound('产品不存在');
-        }
+        $product = Product::findOrFail($product);
         $stock = $product->stock === -1 ? 99999 : $product->stock;
 
         //TODO: 入库前对用户输入数据转义
         $data = $this->validate($request, [
             'number' => 'required|integer|min:1|max:' . $stock,
-            'params' => 'required|json' //NOTICE: 用户输入数据，输出时格外注意
+            'params' => 'required|array' //NOTICE: 用户输入数据，输出时格外注意
         ]);
 
-        $params = json_decode($data['params']);
-
         // 创建订单
-        $result = app('App\Creators\OrderCreator')->create($product, $data['number'], $params);
+        $result = app('App\Creators\OrderCreator')->create($product, $data['number'], $data['params']);
 
-        if ($request) {
+        if ($result) {
             return ['order_id' => $result->id];
         } else {
-            $this->response->errorInternal('创建失败');
+            return $this->response->errorInternal('创建失败');
         }
     }
 
