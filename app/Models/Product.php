@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    protected $fillable = ['name', 'introduction', 'price', 'category_id', 'required_params'];
+    protected $fillable = ['name', 'introduction', 'stock', 'price', 'category_id', 'required_params', 'warranty_period', 'show'];
 
     public function category()
     {
@@ -40,6 +40,7 @@ class Product extends Model
 
     public function getRequiredParamsAttribute()
     {
-        return json_decode($this->attributes['required_params']);
+        // 强制生成关联数组，不然会罢工
+        return json_decode($this->attributes['required_params'], true);
     }
 }

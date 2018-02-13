@@ -51,6 +51,7 @@ class SYSTEAMInitRBAC extends Command
             'manage products',
             'manage categories',
             'manage orders',
+            'manage payment',
             'manage website settings'
         ];
         foreach ($admin_permissions as $permission){

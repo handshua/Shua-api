@@ -3,21 +3,31 @@
 namespace App\Models;
 
 use App\Payment\Contracts\PaymentDriver;
+use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Payment extends Model
 {
-    protected $fillable = ['name', 'driver'];
+    protected $fillable = ['name', 'params', 'driver'];
 
 
     public function getParamsAttribute()
     {
-        return json_decode($this->params);
+        // 强制生成关联数组，不然会罢工
+        return json_decode($this->attributes['params'], true);
     }
 
-    public function setParamsAttribute(Array $params){
-        $this->params = json_encode($params);
+    public function setParamsAttribute($params)
+    {
+        if (is_array($params)) {
+            $params = json_encode($params);
+        }
+
+        if ($params instanceof Jsonable) {
+            $params = $params->toJson();
+        }
+        $this->attributes['params'] = $params;
     }
 
     /**

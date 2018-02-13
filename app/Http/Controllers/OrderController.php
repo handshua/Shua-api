@@ -4,33 +4,34 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Payment;
+use App\Transformers\OrderTransformer;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public function all()
+    public function all($page_number = false)
     {
-        return Order::all();
-    }
-
-    public function show(Order $order)
-    {
-        if (!$order->exists) {
-            $this->response->errorNotFound('订单不存在');
-            return;
+        if ($page_number){
+            return $this->response->paginator(Order::paginate($page_number),new OrderTransformer());
         }
-        return $order;
+        return $this->response->collection(Order::all(), new OrderTransformer);
     }
 
-    public function pay(Order $order, Payment $payment, Request $request)
+    public function show($order)
     {
-        $notify_url = route('payment.notify', ['driver' => $payment->driver]);
+        $order = Order::findOrFail($order);
+        return $this->response->item($order, new OrderTransformer);
+    }
+
+    public function pay($order, $payment, Request $request)
+    {
+        $order = Order::findOrFail($order);
+        $payment = Payment::findOrFail($payment);
+
+        $notify_url = route('payment.notify', ['payment' => $payment->id]);
         $return_url = url('/');
         $redirect_url = $payment->getDriver()
-                                ->submit($order->id, $order->price / 100, $notify_url, $return_url);
-        if ($request->isMethod('get'))
-            return redirect($redirect_url);
-        else
-            return compact($redirect_url);
+            ->submit($order->id, $order->price / 100, $notify_url, $return_url);
+        return compact('redirect_url');
     }
 }

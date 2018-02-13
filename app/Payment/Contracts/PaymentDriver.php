@@ -26,5 +26,5 @@ interface PaymentDriver
      * @param Request $request
      * @return string|bool 返回订单号
      */
-    function validate(Request $request);
+    static function validate(Request $request, $key);
 }

@@ -3,6 +3,8 @@
 
 /** @var \Dingo\Api\Routing\Router $api */
 
+/** @var \Laravel\Lumen\Routing\Router $router */
+
 use Dingo\Api\Routing\Router;
 
 $api = app('Dingo\Api\Routing\Router');
@@ -30,13 +32,23 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function (Router $a
         $api->delete('/product/{product}', 'ProductController@delete');
     });
 
+    $api->match(['get', 'post'], '/order/{order}/pay/{payment}', 'OrderController@pay');
+    $api->group(['middleware' => ['permission:manage orders']], function (Router $api) {
+        $api->get('/order/list/{page_number?}', 'OrderController@all');
+    });
     $api->get('/order/{order}', 'OrderController@show');
-    $api->match(['get', 'post'], '/order/{order}/pay', 'OrderController@pay');
 
-    $api->get('/payment', 'PaymentController@methods');
-    $api->post('/payment/{driver}/notify', ['as' => 'payment.notify', 'uses' => 'PaymentController@notify']);
+
+    $api->get('/payment', 'PaymentController@all');
+    $api->group(['middleware' => ['permission:manage payment']], function (Router $api) {
+        $api->put('/payment/{product?}', 'PaymentController@store');
+    });
 
     $api->group(['middleware' => 'jwt.auth'], function (Router $api) {
 
     });
 });
+
+$router->get('/payment/{payment}/notify', ['as' => 'payment.notify', 'uses' => 'PaymentController@notify']);
+$router->post('/payment/{payment}/notify', ['as' => 'payment.notify', 'uses' => 'PaymentController@notify']);
+

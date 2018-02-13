@@ -32,9 +32,9 @@ class CategoryController extends Controller
         ]);
 
         if ($category->fill($data)->save())
-            $this->response->created();
+            return $this->response->created();
         else
-            $this->response->errorInternal();
+            return $this->response->errorInternal();
 
     }
 
@@ -43,14 +43,14 @@ class CategoryController extends Controller
         $category = Category::findOrFail($category);
 
         if ($category->products->count() > 0) {
-            $this->response->errorForbidden('请先删除该分类下所有商品');
+            return $this->response->errorForbidden('请先删除该分类下所有商品');
             return;
         }
 
         if ($category->delete()) {
             return ['message' => '已删除'];
         } else {
-            $this->response->errorInternal('删除失败');
+            return $this->response->errorInternal('删除失败');
         }
     }
 

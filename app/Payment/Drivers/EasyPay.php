@@ -48,7 +48,7 @@ class EasyPay implements PaymentDriver
             'money' => $money
         ];
 
-        $sign = $this->sign($params);
+        $sign = $this->sign($params, $this->key);
         $params['sign_type'] = 'MD5';
         $params['sign'] = $sign;
 
@@ -63,16 +63,17 @@ class EasyPay implements PaymentDriver
      * @param Request $request
      * @return string|bool 返回订单号
      */
-    public function validate(Request $request)
+    public static function validate(Request $request, $key)
     {
         $data = $request->all();
         if (empty($data['sign']) || empty($data['trade_status']) || empty($data['out_trade_no']) || empty($data['sign_type']) || strtoupper($data['sign_type']) !== 'MD5')
             return false;
-        if (strpos(strtolower($data['trade_status']), 'SUCCESS') === false)
+
+        if ($data['trade_status'] !== 'TRADE_SUCCESS')
             return false;
 
-        $sign = $this->sign($data);
-        return $sign === $this->sign($data) ? $data['out_trade_no'] : false;
+        $sign = self::sign($data, $key);
+        return $sign === $data['sign'] ? $data['out_trade_no'] : false;
     }
 
 
@@ -82,21 +83,24 @@ class EasyPay implements PaymentDriver
     }
 
 
-    protected function sign(Array $data)
+    protected static function sign(Array $data, $key)
     {
         // 排除 sign & sign_type
         unset($data['sign'], $data['sign_type']);
+
+        // 删除空项目
+        reset($data);
 
         // 排序
         ksort($data);
 
         // 拼接成 key1=var2&key2=var2 的形式
-        $sign_string = $this->createLinkstring($data);
+        $sign_string = self::createLinkstring($data) . $key;
 
         return md5($sign_string);
     }
 
-    protected function createLinkstring(Array $data)
+    protected static function createLinkstring(Array $data)
     {
         $params = [];
         foreach ($data as $key => $value) {

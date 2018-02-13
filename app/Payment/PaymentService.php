@@ -3,11 +3,14 @@
 namespace App\Payment;
 
 use App\Payment\Contracts\PaymentDriver;
+use App\Payment\Drivers\EasyPay;
 use ReflectionClass;
 
 class PaymentService
 {
-    protected $drivers = [];
+    protected $drivers = [
+        'easypay' => EasyPay::class,
+    ];
 
 
     /**
@@ -30,7 +33,7 @@ class PaymentService
             throw new \Exception('Invalid driver');
         }
 
-        if ($driver instanceof PaymentDriver) {
+        if (!$driver instanceof PaymentDriver) {
             throw new \Exception('Invalid driver');
         }
 

@@ -34,4 +34,9 @@ class Order extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function getIdAttribute()
+    {
+        return utf8_encode($this->attributes['id']);
+    }
 }
